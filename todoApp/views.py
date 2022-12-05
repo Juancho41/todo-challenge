@@ -1,8 +1,10 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .serializers import TareaSerializer
 from .models import Tarea
+from django.contrib.auth.models import User
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -26,8 +28,9 @@ def apiOverview(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def listaTareas(request):
-    tareas = Tarea.objects.all()
+    tareas = Tarea.objects.filter(usuario=request.user)
     serializer = TareaSerializer(tareas, many=True)
     return Response(serializer.data)
 
