@@ -1,3 +1,4 @@
+import datetime
 from django.shortcuts import render
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -100,6 +101,14 @@ def filtrarContenido (request, fil):
     tareas = Tarea.objects.filter(tarea__icontains=fil, usuario=request.user)
     serializer = TareaSerializer(tareas, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def filtrarFecha (request, año, mes, dia):
+    tareas = Tarea.objects.filter(creada__date=datetime.date(año, mes, dia), usuario=request.user)
+    serializer = TareaSerializer(tareas, many=True)
+    return Response(serializer.data)
+
 
 #token views modificadas
 

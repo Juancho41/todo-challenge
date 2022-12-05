@@ -13,7 +13,8 @@ urlpatterns = [
     path('crear-tarea/', views.crearTarea, name='crear-tarea'),
     path('modificar-tarea/<str:pk>/', views.modificarTarea, name='modificar-tarea'),
     path('borrar-tarea/<str:pk>/', views.borrarTarea, name='borrar-tarea'),
-    path('filtrar_contenido/<str:fil>/', views.filtrarContenido, name='filtrar_contenido'),
+    path('filtrar-contenido/<str:fil>/', views.filtrarContenido, name='filtrar-contenido'),
+    path('filtrar-fecha/<int:dia>/<int:mes>/<int:año>', views.filtrarFecha, name='filtrar-fecha'),
 
     path('token/', views.MyTokenObtainPairView.as_view(), name='obtener-token'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
