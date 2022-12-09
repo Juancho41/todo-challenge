@@ -1,7 +1,8 @@
 # ToDo-List - API backend en Django para crear lista de tareas
 
 Una aplicación web sencilla para backend que permita a los usuarios crear y mantener una lista de tarea.
-La API está diseñada para que el usuario tenga que estar autenticado al momento de usarla ya que cada usuario solo puede interactuar con su propia lista de tareas
+La API está diseñada para que el usuario tenga que estar autenticado al momento de usarla ya que cada usuario solo puede interactuar con su propia lista de tareas.
+Toda la api está escrita en python utilizando DJANGO y Django Rest Framework.
 
 ## API
 
@@ -70,3 +71,18 @@ class Tarea(models.Model):
         return self.tarea
 
 ```
+
+## Autenticación
+
+Para validar la autenticación se eligió utilizar JSON Web Token Authentication con su paquete para django "django-rest-framework-simplejwt" (en referencias).
+JSON Web Token es un estándar bastante nuevo que se puede usar para la autenticación basada en tokens. A diferencia del esquema TokenAuthentication incorporado, la autenticación JWT no necesita usar una base de datos para validar un token lo que hace que sea mas veloz. Djangorestframework-simplejwt proporciona algunas funciones para su simple implementación, así como una aplicación de blacklist de tokens para evitar que re utilicen tockes vencidos.
+
+## Referencias
+
+[Dajngo rest frameworkd](https://www.django-rest-framework.org/)
+
+[JSON Web Token Authentication](https://django-rest-framework-simplejwt.readthedocs.io/en/latest/)
+
+[django-cors-headers](https://pypi.org/project/django-cors-headers/)
+
+
