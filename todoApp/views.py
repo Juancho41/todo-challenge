@@ -60,7 +60,7 @@ def detallesTarea(request, pk):
         serializer = TareaSerializer(tarea, many=False)
         return Response(serializer.data)
     else:
-        return Response('Tarea no pertenece al usuario logueado')
+        return Response('Tarea no pertenece al usuario logueado', status=401)
 
 
 
@@ -70,7 +70,7 @@ def crearTarea(request):
     datos = request.data
     datos['usuario'] = request.user.id
     serializer = TareaSerializer(data=datos)
-    print(request.data)
+    #print(request.data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
