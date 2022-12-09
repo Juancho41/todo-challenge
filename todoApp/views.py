@@ -7,6 +7,7 @@ from .serializers import TareaSerializer
 from .models import Tarea
 from django.contrib.auth.models import User
 
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -20,7 +21,12 @@ def apiOverview(request):
         'Detalles': '/detalles-tarea/<str:pk>/',
         'Crear': '/crear-tarea/',
         'Modificar': '/modificar-tarea/<str:pk>/',
+        'Completar-tarea': 'completar-tarea/<str:pk>/',
         'Borrar': '/borrar-tarea/<str:pk>/',
+        'filtrar-contenido': '/filtrar-contenido/<str:fil>/',
+        'filtrar-fecha': 'filtrar-fecha/<int:dia>/<int:mes>/<int:año>',
+
+        'crear-usuario': 'crear-user/',
 
         'Obtener-token': '/token/',
         'Token-refresh': '/token/refresh/',
@@ -29,7 +35,7 @@ def apiOverview(request):
 
 
 """ se deja para poder tener acceso a todas la tareas sin tener
-#          encuenta de q usuario son por las dudas """
+          encuenta de q usuario son por las dudas """
 
 # @api_view(['GET'])
 # def listaTareas(request):
@@ -82,7 +88,34 @@ def modificarTarea(request, pk):
             serializer.save()
         return Response(serializer.data)
     else:
-        return Response('Tarea no pertenece al usuario logueado')
+        return Response('Tarea no pertenece al usuario logueado', status=401)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def completarTarea(request, pk):
+    tarea = Tarea.objects.get(id=pk)
+
+    if tarea.completada:
+        completada = False
+    if (not tarea.completada):
+        completada = True
+
+    nuevaData = {
+        "id": tarea.id,
+        "usuario": tarea.usuario.id,
+        "tarea": tarea.tarea,
+        "completada": completada,
+        "creada": tarea.creada
+    }
+    if (tarea.usuario == request.user):
+        serializer = TareaSerializer(instance=tarea, data=nuevaData)
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            print(serializer.errors)
+        return Response(serializer.data)
+    else:
+        return Response('Tarea no pertenece al usuario logueado', status=401)
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
@@ -92,7 +125,7 @@ def borrarTarea(request, pk):
         tarea.delete()
         return Response('Tarea eliminada!')
     else:
-        return Response('Tarea no pertenece al usuario logueado')
+        return Response('Tarea no pertenece al usuario logueado', status=401)
 
 
 @api_view(['GET'])
@@ -109,6 +142,21 @@ def filtrarFecha (request, año, mes, dia):
     serializer = TareaSerializer(tareas, many=True)
     return Response(serializer.data)
 
+#Creando usuario
+@api_view(['POST'])
+def crearUser(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+    createdUser = User.objects.create_user(username=username, email=None, password=password)
+    def get_tokens_for_user(user):
+        refresh = RefreshToken.for_user(user)
+
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
+    tokens = get_tokens_for_user(createdUser)
+    return Response(tokens)
 
 #token views modificadas
 
